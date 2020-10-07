@@ -15,8 +15,8 @@ import (
 var (
 	inJson     = flag.String("inJson", "/Users/tinnguyen/Downloads/test.json", "path to json file")
 	out        = flag.String("out", "./out.json", "path to out template file")
-	workers    = flag.String("workers", "100", "max number of workers")
-	buffLines  = flag.String("buffLines", "2000", "buffer lines when reading")
+	workers    = flag.String("workers", "1", "max number of workers")
+	buffLines  = flag.String("buffLines", "100", "buffer lines when reading")
 	filterCase = flag.String("filter", "have_email", "filter")
 )
 
@@ -62,8 +62,14 @@ func main() {
 		reader := bufio.NewReader(in)
 		for {
 			var buffer bytes.Buffer
+			endOfFile := false
 			for {
 				l, isPrefix, err := reader.ReadLine()
+				if err == io.EOF {
+					endOfFile = true
+					break
+				}
+
 				buffer.Write(l)
 				// If we've reached the end of the line, stop reading.
 				if !isPrefix {
@@ -75,19 +81,16 @@ func main() {
 					break
 				}
 			}
+
+			if endOfFile {
+				break
+			}
+
 			line := buffer.String()
 			if line != "" {
 				lines <- line
 				numOfLines += 1
 			}
-
-			if err == io.EOF {
-				break
-			}
-		}
-
-		if err != io.EOF {
-			fmt.Printf("Can't process whole file - Failed with error: %v\n", err)
 		}
 
 		fmt.Println("Sending %d lines", numOfLines)
@@ -109,6 +112,7 @@ func main() {
 	for i := 0; i < maxWorker; i++ {
 		wg.Add(1)
 		go func(workerId int, lines <-chan string, goodLines chan<- string, wg *sync.WaitGroup) {
+			fmt.Printf("Worker %d Start", workerId)
 			numOfLines := 0
 			for line := range lines {
 				numOfLines += 1
@@ -117,10 +121,11 @@ func main() {
 				if err != nil {
 					fmt.Printf("Can't parse json from line: %s \n", line)
 				} else {
+					fmt.Printf("Worker %d is processing %d task \n", workerId, numOfLines)
 					// DO business
 					switch *filterCase {
 					case FilterHavingEmail:
-						if record.Source.PersonPhone != "" {
+						if record.Source.PersonEmail != "" {
 							goodLines <- line
 						}
 					case FilterHavingPhone:
@@ -134,12 +139,12 @@ func main() {
 					}
 				}
 			}
-			defer func() {
-				fmt.Printf("Worker %d had procesed %d lines \n", workerId, numOfLines)
-				wg.Done()
-			}()
+
+			fmt.Printf("Worker %d had procesed %d lines \n", workerId, numOfLines)
+			wg.Done()
 		}(i, lines, goodLines, &wg)
 	}
 
 	wg.Wait()
+	close(goodLines)
 }
