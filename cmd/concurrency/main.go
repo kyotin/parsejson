@@ -52,6 +52,10 @@ func main() {
 			lines <- scanner.Text()
 			numOfLines += 1
 		}
+
+		if err := scanner.Err(); err != nil {
+			fmt.Println(err)
+		}
 		fmt.Println(fmt.Printf("Sending %d lines", numOfLines))
 		close(lines)
 	}()
