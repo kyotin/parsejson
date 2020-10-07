@@ -61,7 +61,7 @@ func main() {
 			numOfLines += 1
 		}
 
-		fmt.Println(fmt.Printf("Sending %d lines", numOfLines))
+		fmt.Printf("Sending %d lines \n", numOfLines)
 		close(lines)
 	}()
 
@@ -86,7 +86,7 @@ func main() {
 				record := &Record{}
 				err := json.Unmarshal([]byte(line), record)
 				if err != nil {
-					fmt.Printf("Can't parse json from line: %s", line)
+					fmt.Printf("Can't parse json from line: %s \n", line)
 				} else {
 					// DO business
 					if record.Source.PersonPhone != "" {
@@ -95,7 +95,7 @@ func main() {
 				}
 			}
 			defer func() {
-				fmt.Println(fmt.Printf("Worker %d had procesed %d lines", workerId, numOfLines))
+				fmt.Printf("Worker %d had procesed %d lines \n", workerId, numOfLines)
 				wg.Done()
 			}()
 		}(i, lines, goodLines, &wg)
