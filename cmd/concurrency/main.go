@@ -15,7 +15,8 @@ import (
 var (
 	inJson = flag.String("inJson", "/Users/tinnguyen/Downloads/test.json", "path to json file")
 	out    = flag.String("out", "./out.json", "path to out template file")
-	workers = flag.String("worker", "100", "max number of workers")
+	workers = flag.String("workers", "100", "max number of workers")
+	buffLines = flag.String("buffLines", "2000", "buffer lines when reading")
 )
 
 type _Source struct {
@@ -46,7 +47,8 @@ func main() {
 	}
 	defer out.Close()
 
-	lines := make(chan string, 2000)
+	buffLines, _ := strconv.Atoi(*buffLines)
+	lines := make(chan string, buffLines)
 	go func() {
 		numOfLines := 0
 
@@ -89,7 +91,9 @@ func main() {
 		close(lines)
 	}()
 
-	goodLines := make(chan string, 100)
+	maxWorker, _ := strconv.Atoi(*workers)
+
+	goodLines := make(chan string, maxWorker)
 	go func(goodLines <-chan string) {
 		for line := range goodLines {
 			if _, err := out.WriteString(line + "\n"); err != nil {
@@ -99,8 +103,6 @@ func main() {
 	}(goodLines)
 
 	var wg sync.WaitGroup
-
-	maxWorker, _ := strconv.Atoi(*workers)
 	for i:=0; i < maxWorker; i++ {
 		wg.Add(1)
 		go func(workerId int, lines <-chan string, goodLines chan<- string, wg *sync.WaitGroup){
