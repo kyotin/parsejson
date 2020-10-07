@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -52,16 +53,39 @@ func main() {
 		// Start reading from the file with a reader.
 		reader := bufio.NewReader(in)
 		for {
-			line, err := reader.ReadString('\n')
-			if err != nil && err != io.EOF {
-				fmt.Printf(" > Failed with error: %v\n", err)
+			var buffer bytes.Buffer
+			for {
+				l, isPrefix, err := reader.ReadLine()
+				buffer.Write(l)
+				// If we've reached the end of the line, stop reading.
+				if !isPrefix {
+					break
+				}
+				// If we're at the EOF, break.
+				if err != nil {
+					if err != io.EOF {
+						fmt.Printf("ERROR %v \n", err)
+					}
+					break
+				}
+			}
+			line := buffer.String()
+			if line != "" {
+				lines <- line
+			}
+
+			if err == io.EOF {
 				break
 			}
-			lines <- line
+
 			numOfLines += 1
 		}
 
-		fmt.Printf("Sending %d lines \n", numOfLines)
+		if err != io.EOF {
+			fmt.Printf("Can't process whole file - Failed with error: %v\n", err)
+		}
+
+		fmt.Println("Sending %d lines", numOfLines)
 		close(lines)
 	}()
 
