@@ -47,9 +47,12 @@ func main() {
 	lines := make(chan string, 2000)
 	go func() {
 		scanner := bufio.NewScanner(in)
+		numOfLines := 0
 		for scanner.Scan() {
 			lines <- scanner.Text()
+			numOfLines += 1
 		}
+		fmt.Println(fmt.Printf("Sending %d lines", numOfLines))
 		close(lines)
 	}()
 
@@ -68,8 +71,9 @@ func main() {
 	for i:=0; i < maxWorker; i++ {
 		wg.Add(1)
 		go func(workerId int, lines <-chan string, goodLines chan<- string, wg *sync.WaitGroup){
-			fmt.Printf("WorkerId %d", workerId)
+			numOfLines := 0
 			for line := range lines {
+				numOfLines += 1
 				record := &Record{}
 				err := json.Unmarshal([]byte(line), record)
 				if err != nil {
@@ -81,7 +85,10 @@ func main() {
 					}
 				}
 			}
-			defer wg.Done()
+			defer func() {
+				fmt.Println(fmt.Printf("Worker %d had procesed %d lines", workerId, numOfLines))
+				wg.Done()
+			}()
 		}(i, lines, goodLines, &wg)
 	}
 

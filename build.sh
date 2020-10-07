@@ -1,0 +1,1 @@
+go build -o parse ./cmd/concurrency/
