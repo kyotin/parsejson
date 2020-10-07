@@ -13,10 +13,17 @@ import (
 )
 
 var (
-	inJson = flag.String("inJson", "/Users/tinnguyen/Downloads/test.json", "path to json file")
-	out    = flag.String("out", "./out.json", "path to out template file")
-	workers = flag.String("workers", "100", "max number of workers")
-	buffLines = flag.String("buffLines", "2000", "buffer lines when reading")
+	inJson     = flag.String("inJson", "/Users/tinnguyen/Downloads/test.json", "path to json file")
+	out        = flag.String("out", "./out.json", "path to out template file")
+	workers    = flag.String("workers", "100", "max number of workers")
+	buffLines  = flag.String("buffLines", "2000", "buffer lines when reading")
+	filterCase = flag.String("filter", "have_email", "filter")
+)
+
+const (
+	FilterHavingEmail      = "have_email"
+	FilterHavingPhone      = "have_phone"
+	FilterHavingEmailPhone = "have_email,have_phone"
 )
 
 type _Source struct {
@@ -30,7 +37,6 @@ type Record struct {
 	Type   string  `json:"_type"`
 	Source _Source `json:"_source"`
 }
-
 
 func main() {
 	flag.Parse()
@@ -63,24 +69,21 @@ func main() {
 				if !isPrefix {
 					break
 				}
-				// If we're at the EOF, break.
-				if err != nil {
-					if err != io.EOF {
-						fmt.Printf("ERROR %v \n", err)
-					}
+
+				if err != nil && err != io.EOF {
+					fmt.Printf("ERROR %v \n", err)
 					break
 				}
 			}
 			line := buffer.String()
 			if line != "" {
 				lines <- line
+				numOfLines += 1
 			}
 
 			if err == io.EOF {
 				break
 			}
-
-			numOfLines += 1
 		}
 
 		if err != io.EOF {
@@ -103,9 +106,9 @@ func main() {
 	}(goodLines)
 
 	var wg sync.WaitGroup
-	for i:=0; i < maxWorker; i++ {
+	for i := 0; i < maxWorker; i++ {
 		wg.Add(1)
-		go func(workerId int, lines <-chan string, goodLines chan<- string, wg *sync.WaitGroup){
+		go func(workerId int, lines <-chan string, goodLines chan<- string, wg *sync.WaitGroup) {
 			numOfLines := 0
 			for line := range lines {
 				numOfLines += 1
@@ -115,8 +118,19 @@ func main() {
 					fmt.Printf("Can't parse json from line: %s \n", line)
 				} else {
 					// DO business
-					if record.Source.PersonPhone != "" {
-						goodLines <- line
+					switch *filterCase {
+					case FilterHavingEmail:
+						if record.Source.PersonPhone != "" {
+							goodLines <- line
+						}
+					case FilterHavingPhone:
+						if record.Source.PersonPhone != "" {
+							goodLines <- line
+						}
+					case FilterHavingEmailPhone:
+						if record.Source.PersonPhone != "" && record.Source.PersonEmail != "" {
+							goodLines <- line
+						}
 					}
 				}
 			}
