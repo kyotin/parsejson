@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 	"sync"
@@ -46,16 +47,20 @@ func main() {
 
 	lines := make(chan string, 2000)
 	go func() {
-		scanner := bufio.NewScanner(in)
 		numOfLines := 0
-		for scanner.Scan() {
-			lines <- scanner.Text()
+
+		// Start reading from the file with a reader.
+		reader := bufio.NewReader(in)
+		for {
+			line, err := reader.ReadString('\n')
+			if err != nil && err != io.EOF {
+				fmt.Printf(" > Failed with error: %v\n", err)
+				break
+			}
+			lines <- line
 			numOfLines += 1
 		}
 
-		if err := scanner.Err(); err != nil {
-			fmt.Println(err)
-		}
 		fmt.Println(fmt.Printf("Sending %d lines", numOfLines))
 		close(lines)
 	}()
