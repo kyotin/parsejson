@@ -160,11 +160,13 @@ func main() {
 							}
 						}
 					case FilterHavingPhone337:
-						phone := strings.Trim(record.Source.PersonPSanitizedPhone, " ")
-						phone = strings.Trim(phone, "+")
-						phone = strings.Trim(phone, " ")
-						if strings.HasPrefix(phone, "337") {
-							goodLines <- line
+						if record.Source.PersonPSanitizedPhone != "" {
+							phone := strings.Trim(record.Source.PersonPSanitizedPhone, " ")
+							phone = strings.Trim(phone, "+")
+							phone = strings.Trim(phone, " ")
+							if strings.HasPrefix(phone, "337") {
+								goodLines <- line
+							}
 						}
 					}
 				}
