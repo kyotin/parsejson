@@ -37,10 +37,14 @@ func main() {
 	pickedRow := make(map[int]struct{}, *numOfRows)
 
 	rand.Seed(time.Now().UnixNano())
-	for i := 0; i < *numOfRows; i++ {
+	for {
 		min := 1
 		max := *maxRowsInFile
 		pickedRow[rand.Intn(max-min+1) + min] = struct{}{}
+
+		if len(pickedRow) == *numOfRows {
+			break
+		}
 	}
 
 	// Start reading from the file with a reader.
