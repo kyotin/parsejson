@@ -27,13 +27,14 @@ const (
 	FilterHavingEmailPhone = "have_email,have_phone"
 	FilterHavingPhone33    = "have_phone_33"
 	FilterHavingPhone336   = "have_phone_336"
-	FilterHavingPhone337 	= "have_phone_337"
+	FilterHavingPhone337   = "have_phone_337"
 )
 
 type _Source struct {
-	PersonName  string `json:"person_name"`
-	PersonEmail string `json:"person_email"`
-	PersonPhone string `json:"person_phone"`
+	PersonName            string `json:"person_name"`
+	PersonEmail           string `json:"person_email"`
+	PersonPhone           string `json:"person_phone"`
+	PersonPSanitizedPhone string `json:"person_sanitized_phone"`
 }
 
 type Record struct {
@@ -141,8 +142,8 @@ func main() {
 							goodLines <- line
 						}
 					case FilterHavingPhone33:
-						if record.Source.PersonPhone != "" {
-							phone := strings.Trim(record.Source.PersonPhone, " ")
+						if record.Source.PersonPSanitizedPhone != "" {
+							phone := strings.Trim(record.Source.PersonPSanitizedPhone, " ")
 							phone = strings.Trim(phone, "+")
 							phone = strings.Trim(phone, " ")
 							if strings.HasPrefix(phone, "33") {
@@ -150,8 +151,8 @@ func main() {
 							}
 						}
 					case FilterHavingPhone336:
-						if record.Source.PersonPhone != "" {
-							phone := strings.Trim(record.Source.PersonPhone, " ")
+						if record.Source.PersonPSanitizedPhone != "" {
+							phone := strings.Trim(record.Source.PersonPSanitizedPhone, " ")
 							phone = strings.Trim(phone, "+")
 							phone = strings.Trim(phone, " ")
 							if strings.HasPrefix(phone, "336") {
@@ -159,10 +160,10 @@ func main() {
 							}
 						}
 					case FilterHavingPhone337:
-						phone := strings.Trim(record.Source.PersonPhone, " ")
+						phone := strings.Trim(record.Source.PersonPSanitizedPhone, " ")
 						phone = strings.Trim(phone, "+")
 						phone = strings.Trim(phone, " ")
-						if strings.HasPrefix(phone , "337")  {
+						if strings.HasPrefix(phone, "337") {
 							goodLines <- line
 						}
 					}
