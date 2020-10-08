@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -24,6 +25,9 @@ const (
 	FilterHavingEmail      = "have_email"
 	FilterHavingPhone      = "have_phone"
 	FilterHavingEmailPhone = "have_email,have_phone"
+	FilterHavingPhone33    = "have_phone_33"
+	FilterHavingPhone336   = "have_phone_336"
+	FilterHavingPhone337 	= "have_phone_337"
 )
 
 type _Source struct {
@@ -134,6 +138,31 @@ func main() {
 						}
 					case FilterHavingEmailPhone:
 						if record.Source.PersonPhone != "" && record.Source.PersonEmail != "" {
+							goodLines <- line
+						}
+					case FilterHavingPhone33:
+						if record.Source.PersonPhone != "" {
+							phone := strings.Trim(record.Source.PersonPhone, " ")
+							phone = strings.Trim(phone, "+")
+							phone = strings.Trim(phone, " ")
+							if strings.HasPrefix(phone, "33") {
+								goodLines <- line
+							}
+						}
+					case FilterHavingPhone336:
+						if record.Source.PersonPhone != "" {
+							phone := strings.Trim(record.Source.PersonPhone, " ")
+							phone = strings.Trim(phone, "+")
+							phone = strings.Trim(phone, " ")
+							if strings.HasPrefix(phone, "336") {
+								goodLines <- line
+							}
+						}
+					case FilterHavingPhone337:
+						phone := strings.Trim(record.Source.PersonPhone, " ")
+						phone = strings.Trim(phone, "+")
+						phone = strings.Trim(phone, " ")
+						if strings.HasPrefix(phone , "336")  {
 							goodLines <- line
 						}
 					}
