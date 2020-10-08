@@ -28,13 +28,17 @@ const (
 	FilterHavingPhone33    = "have_phone_33"
 	FilterHavingPhone336   = "have_phone_336"
 	FilterHavingPhone337   = "have_phone_337"
+	FilterCompanyIBM       = "company_ibm"
+	FilterCompanyFacebook  = "company_facebook"
+	FilterCompanyGoogle    = "company_google"
 )
 
 type _Source struct {
-	PersonName            string `json:"person_name"`
-	PersonEmail           string `json:"person_email"`
-	PersonPhone           string `json:"person_phone"`
-	PersonPSanitizedPhone string `json:"person_sanitized_phone"`
+	PersonName             string `json:"person_name"`
+	PersonEmail            string `json:"person_email"`
+	PersonPhone            string `json:"person_phone"`
+	PersonPSanitizedPhone  string `json:"person_sanitized_phone"`
+	OrganizationWebsiteUrl string `json:"organization_website_url"`
 }
 
 type Record struct {
@@ -167,6 +171,18 @@ func main() {
 							if strings.HasPrefix(phone, "337") {
 								goodLines <- line
 							}
+						}
+					case FilterCompanyFacebook:
+						if record.Source.OrganizationWebsiteUrl == "http://www.facebook.com" {
+							goodLines <- line
+						}
+					case FilterCompanyGoogle:
+						if record.Source.OrganizationWebsiteUrl == "http://www.google.com" {
+							goodLines <- line
+						}
+					case FilterCompanyIBM:
+						if record.Source.OrganizationWebsiteUrl == "http://www.ibm.com" {
+							goodLines <- line
 						}
 					}
 				}
