@@ -162,7 +162,7 @@ func main() {
 						phone := strings.Trim(record.Source.PersonPhone, " ")
 						phone = strings.Trim(phone, "+")
 						phone = strings.Trim(phone, " ")
-						if strings.HasPrefix(phone , "336")  {
+						if strings.HasPrefix(phone , "337")  {
 							goodLines <- line
 						}
 					}
