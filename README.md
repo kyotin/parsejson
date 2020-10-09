@@ -18,6 +18,15 @@ nohup ./parse -inJson=./Apollo.io_none_July_2018-PART-2-have-phone.json -out=./A
 nohup ./parse -inJson=./Apollo.io_none_July_2018-PART-1-have-phone.json -out=./Apollo.io_none_July_2018-PART-1-have-phone-337.json -workers=1000 -buffLines=10000 -filter=have_phone_337 > log_par1_have_phone_33.log &  
 nohup ./parse -inJson=./Apollo.io_none_July_2018-PART-2-have-phone.json -out=./Apollo.io_none_July_2018-PART-2-have-phone-337.json -workers=1000 -buffLines=10000 -filter=have_phone_337 > log_par2_have_phone_33.log &  
 
+nohup ./parse -inJson=/home/ubuntu/Apollo.io_none_July_2018-PART-1.json -out=./Apollo.io_none_July_2018-PART-1-company-ibm.json -workers=1000 -buffLines=10000 -filter=company_ibm &  
+nohup ./parse -inJson=/home/ubuntu/Apollo.io_none_July_2018-PART-2.json -out=./Apollo.io_none_July_2018-PART-2-company-ibm.json -workers=1000 -buffLines=10000 -filter=company_ibm &  
+
+nohup ./parse -inJson=/home/ubuntu/Apollo.io_none_July_2018-PART-1.json -out=./Apollo.io_none_July_2018-PART-1-company-facebook.json -workers=1000 -buffLines=10000 -filter=company_facebook &  
+nohup ./parse -inJson=/home/ubuntu/Apollo.io_none_July_2018-PART-2.json -out=./Apollo.io_none_July_2018-PART-2-company-facebook.json -workers=1000 -buffLines=10000 -filter=company_facebook &  
+
+nohup ./parse -inJson=/home/ubuntu/Apollo.io_none_July_2018-PART-1.json -out=./Apollo.io_none_July_2018-PART-1-company-google.json -workers=1000 -buffLines=10000 -filter=company_google &  
+nohup ./parse -inJson=/home/ubuntu/Apollo.io_none_July_2018-PART-2.json -out=./Apollo.io_none_July_2018-PART-2-company-google.json -workers=1000 -buffLines=10000 -filter=company_google &  
+
 nohup ./randompick -inJson=./Apollo.io_none_July_2018-PART-2.json -out=./randompick-part-2.json -numOfRows=10000 -maxRowsInFile=84750000 &  
 nohup ./randompick -inJson=./Apollo.io_none_July_2018-PART-1.json -out=./randompick-part-1.json -numOfRows=10000 -maxRowsInFile=1350000 &  
 
@@ -31,6 +40,13 @@ nohup aws s3 cp Apollo.io_none_July_2018-PART-1-have-email.json s3://thedirector
 nohup aws s3 cp Apollo.io_none_July_2018-PART-2-have-email-phone.json s3://thedirector/processed/ &  
 nohup aws s3 cp Apollo.io_none_July_2018-PART-2-have-phone.json s3://thedirector/processed/ &  
 nohup aws s3 cp Apollo.io_none_July_2018-PART-2-have-email.json s3://thedirector/processed/ &  
+
+nohup aws s3 cp Apollo.io_none_July_2018-PART-1-have-phone-337.json s3://thedirector/processed/ &  
+nohup aws s3 cp Apollo.io_none_July_2018-PART-1-have-phone-336.json s3://thedirector/processed/ &  
+nohup aws s3 cp Apollo.io_none_July_2018-PART-1-have-phone-33.json s3://thedirector/processed/ &  
+nohup aws s3 cp Apollo.io_none_July_2018-PART-2-have-phone-336.json s3://thedirector/processed/ & 
+nohup aws s3 cp Apollo.io_none_July_2018-PART-2-have-phone-33.json s3://thedirector/processed/ &  
+nohup aws s3 cp Apollo.io_none_July_2018-PART-2-have-phone-337.json s3://thedirector/processed/ &  
 
 ### Summarize
 count of total row: 86100000 rows
