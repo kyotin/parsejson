@@ -33,6 +33,9 @@ nohup ./randompick -inJson=./Apollo.io_none_July_2018-PART-1.json -out=./randomp
 nohup ./distinct -inJson=./Apollo.io_none_July_2018-PART-1.json -out=./Apollo.io_none_July_2018-PART-1-distinct.json -maxRowsInFile=1350000 > distinct-part-1.log &   
 nohup ./distinct -inJson=./Apollo.io_none_July_2018-PART-2.json -out=./Apollo.io_none_July_2018-PART-2-distinct.json -maxRowsInFile=84750000 > distinct-part-2.log &  
 
+nohup ./countdistinctbyfield -inJson=Apollo.io_none_July_2018-PART-1.json -out=part1_distint_person_email_status_cd.log  -workers=1000 -buffLines=10000 -field=person_email_status_cd > countdistint.log &
+nohup ./countdistinctbyfield -inJson=Apollo.io_none_July_2018-PART-2-distinct.json -out=part2_distint_person_email_status_cd.log  -workers=1000 -buffLines=10000 -field=person_email_status_cd > countdistint2.log &
+
 ### Push to s3
 nohup aws s3 cp Apollo.io_none_July_2018-PART-1-have-phone.json s3://thedirector/processed/ &  
 nohup aws s3 cp Apollo.io_none_July_2018-PART-1-have-email-phone.json s3://thedirector/processed/ &  
